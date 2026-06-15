@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import CandidateCard from "@/components/CandidateCard";
 import CandidateDetail from "@/components/CandidateDetail";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ResultsList() {
@@ -217,15 +218,16 @@ export default function ResultsList() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {displayed.map((candidate) => (
-            <CandidateCard
-              key={candidate.id}
-              candidate={{
-                ...candidate,
-                isShortlisted: isShortlisted(candidate.id),
-              }}
-              onShortlist={() => toggleShortlist(candidate.id)}
-              onDetail={() => openDetail(candidate)}
-            />
+            <ErrorBoundary key={candidate.id}>
+              <CandidateCard
+                candidate={{
+                  ...candidate,
+                  isShortlisted: isShortlisted(candidate.id),
+                }}
+                onShortlist={() => toggleShortlist(candidate.id)}
+                onDetail={() => openDetail(candidate)}
+              />
+            </ErrorBoundary>
           ))}
         </div>
       )}

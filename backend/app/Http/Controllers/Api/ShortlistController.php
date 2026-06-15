@@ -51,6 +51,7 @@ class ShortlistController extends Controller
      */
     public function destroy(int $videoId): JsonResponse
     {
+        $video = Video::findOrFail($videoId);
         Shortlist::where('video_id', $videoId)->delete();
 
         return response()->json(['success' => true]);
