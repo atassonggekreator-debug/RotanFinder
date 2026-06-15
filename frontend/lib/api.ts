@@ -60,16 +60,33 @@ export async function getResults(
   return data;
 }
 
+export async function addToShortlist(
+  videoId: number
+): Promise<void> {
+  await api.post("/shortlist", { video_id: videoId });
+}
+
+export async function removeFromShortlist(
+  videoId: number
+): Promise<void> {
+  await api.delete(`/shortlist/${videoId}`);
+}
+
+export async function fetchShortlist(): Promise<Candidate[]> {
+  const { data } = await api.get("/shortlist");
+  return data;
+}
+
 export async function toggleShortlist(
   candidateId: number,
   action: ShortlistAction
 ): Promise<void> {
-  await api.post("/shortlist", { candidate_id: candidateId, action });
+  await api.post("/shortlist/toggle", { candidate_id: candidateId, action });
 }
 
 export async function getShortlist(): Promise<Candidate[]> {
   const { data } = await api.get("/shortlist");
-  return data.candidates ?? data;
+  return data;
 }
 
 export async function exportData(

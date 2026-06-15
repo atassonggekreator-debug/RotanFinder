@@ -11,7 +11,9 @@ Route::post('/discover', [DiscoveryController::class, 'store']);
 Route::get('/discover/{id}', [DiscoveryController::class, 'show']);
 
 Route::get('/shortlist', [ShortlistController::class, 'index']);
-Route::post('/shortlist', [ShortlistController::class, 'toggle']);
+Route::post('/shortlist', [ShortlistController::class, 'store']);
+Route::delete('/shortlist/{videoId}', [ShortlistController::class, 'destroy']);
+Route::post('/shortlist/toggle', [ShortlistController::class, 'toggle']);
 
 Route::post('/export', [ExportController::class, 'export']);
 

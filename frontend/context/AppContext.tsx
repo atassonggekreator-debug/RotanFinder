@@ -8,6 +8,7 @@ import React, {
   useCallback,
   type ReactNode,
 } from "react";
+import { fetchShortlist, addToShortlist, removeFromShortlist } from "@/lib/api";
 import type { AppState, AppAction } from "@/lib/types";
 
 const STORAGE_KEY = "rotanfinder_state";
@@ -37,6 +38,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
         : [...state.shortlist, id];
       return { ...state, shortlist };
     }
+    case "HYDRATE_SHORTLIST":
+      return { ...state, shortlist: action.payload };
     case "SET_ACTIVE_TAB":
       return { ...state, activeTab: action.payload };
     case "SELECT_CANDIDATE":
@@ -95,14 +98,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [state.shortlist, state.results]);
 
+  // Sync shortlist from DB on mount (authoritative source)
+  // Keeps localStorage as fast cache, DB as source of truth
+  useEffect(() => {
+    fetchShortlist()
+      .then((candidates) => {
+        const ids = candidates.map((c) => c.id);
+        dispatch({ type: "HYDRATE_SHORTLIST", payload: ids });
+      })
+      .catch(() => {
+        // API unavailable — localStorage cache is fine
+      });
+  }, []);
+
   const isShortlisted = useCallback(
     (id: number) => state.shortlist.includes(id),
     [state.shortlist]
   );
 
   const toggleShortlist = useCallback(
-    (id: number) => dispatch({ type: "TOGGLE_SHORTLIST", payload: id }),
-    []
+    async (id: number) => {
+      const isAdd = !state.shortlist.includes(id);
+      try {
+        if (isAdd) {
+          await addToShortlist(id);
+        } else {
+          await removeFromShortlist(id);
+        }
+        dispatch({ type: "TOGGLE_SHORTLIST", payload: id });
+      } catch {
+        dispatch({ type: "SET_ERROR", payload: "Failed to sync shortlist with server" });
+      }
+    },
+    [state.shortlist]
   );
 
   const clearError = useCallback(

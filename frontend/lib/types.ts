@@ -73,4 +73,5 @@ export type AppAction =
   | { type: "TOGGLE_SHORTLIST"; payload: number }
   | { type: "SET_ACTIVE_TAB"; payload: AppState["activeTab"] }
   | { type: "SELECT_CANDIDATE"; payload: Candidate | null }
-  | { type: "CLEAR_ERROR" };
+  | { type: "CLEAR_ERROR" }
+  | { type: "HYDRATE_SHORTLIST"; payload: number[] };
