@@ -1,0 +1,22 @@
+[Unit]
+Description=Rotan Finder Queue Worker
+After=network.target
+Requires=php-fpm.service
+
+[Service]
+Type=simple
+User=iwan
+Group=iwan
+WorkingDirectory=/home/iwan/AI_Company/projects/rotan-finder
+ExecStart=/usr/bin/php artisan queue:work --tries=3 --backoff=10,30,60 --timeout=120 --sleep=3
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=rotan-queue
+
+# Mencegah memory leak restart otomatis (max 200MB)
+MemoryMax=200M
+
+[Install]
+WantedBy=multi-user.target
